@@ -1,70 +1,61 @@
-# Getting Started with Create React App
+# Whiteboard Web Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This repository contains the frontend code for a Whiteboard Web Application built using ReactJS. It enables users to collaborate in real-time, drawing shapes and lines, using various tools like pencil, eraser, and predefined shapes (line, circle, rectangle).
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **Real-time Collaboration (In Development):** Real-time collaboration feature is currently in development and will enable users to collaborate in real-time on a shared whiteboard.
+- **Drawing Tools:** Users can draw using a pencil tool or choose from predefined shapes like line, circle, and rectangle.
+- **Undo/Redo:** Users can undo or redo drawing operations.
+- **Customization:** Users can customize drawing properties such as color, thickness, and opacity.
+- **Optimized Rendering:** Utilizes SVG instead of Canvas for optimized rendering and reduced rerendering.
+- **Local Storage:** Drawing data is saved to local storage, associated with a room ID, ensuring persistence across sessions.
+- **Tailwind CSS:** Utilizes Tailwind CSS for styling, allowing for rapid development and customization.
 
-### `npm start`
+## Technologies Used
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **ReactJS:** Frontend framework for building user interfaces.
+- **Tailwind CSS:** Utility-first CSS framework for styling.
+- **RoughJS:** Library used for drawing in the whiteboard.
+- **Socket.IO:** Real-time bidirectional event-based communication for backend integration.
+- **SVG:** Scalable Vector Graphics used for rendering drawings.
+- **Local Storage API:** Used for persisting drawing data locally.
+- **Express:** Backend framework for handling server-side operations.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Installation
 
-### `npm test`
+1. Clone the repository:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+git clone https://github.com/your-username/whiteboard-app.git
+```
 
-### `npm run build`
+1. Navigate into the project directory:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+cd whiteboard-app
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+2. Install dependencies:
 
-### `npm run eject`
+```bash
+npm install
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Usage
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+1. Start the development server:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```bash
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+npm start
+```
 
-## Learn More
+2. Open your web browser and navigate to http://localhost:3000 to view the application.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+3. Start drawing on the whiteboard and collaborate with other users by sharing the room ID.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Contribution
 
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Contributions are welcome! If you find any bugs or have suggestions for improvements, please open an issue or submit a pull request.# ThinkSpace
