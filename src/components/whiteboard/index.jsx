@@ -10,12 +10,14 @@ import { useParams } from "react-router-dom";
 import Toolbar from "./toolbar";
 import Stylebar from "./stylebar";
 import Canvas from "./canvas";
+import Svg from "./svg";
 
 import initialSettings from "../../utils/settings/state";
 import settingActions from "../../utils/settings/actions";
 
 import { LuUndo2, LuRedo2 } from "react-icons/lu";
-import Svg from "./svg";
+import { AiOutlineClear } from "react-icons/ai";
+
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -71,6 +73,16 @@ const Whiteboard = () => {
     }
   }, [operations]);
 
+  const handleClear = useCallback(() => {
+    if (operations.length > 0) {
+      let lastAction = JSON.parse(
+        JSON.stringify(operations[operations.length - 1])
+      );
+      setHistory((prev) => [...prev,...operations]);
+      setOperations((prev) => []);
+    }
+  }, [operations]);
+
   const redoHandler = useCallback(() => {
     if (history.length > 0) {
       let lastAction = JSON.parse(JSON.stringify(history[history.length - 1]));
@@ -113,7 +125,8 @@ const Whiteboard = () => {
       </div>
       <div className="  fixed grid grid-flow-row max-md:grid-flow-col grid-cols-3 max-md:backdrop-blur-md max-md:w-full md:top-20 max-md:bottom-5 p-2  max-md:justify-around">
         <div className="  col-span-3 max-md:col-span-1">
-          <Stylebar
+          <Stylebar 
+            
             settings={settings}
             settingsDispatcher={settingsDispatcher}
           />
@@ -121,13 +134,20 @@ const Whiteboard = () => {
 
         <div className=" col-span-3 max-md:col-span-2 flex justify-around">
           <button onClick={undoHandler} type="button" className="  ">
-            <LuUndo2
+            <LuUndo2 title="undo"
               className={
                 "w-10 h-10 m-auto p-2 border bg-white rounded-md hover:bg-gray-300 active:bg-gray-400 "
               }
             />
           </button>
-          <button onClick={redoHandler} type="button" className="">
+          <button title="Clear" onClick={handleClear} type="button" className="  ">
+            <AiOutlineClear
+              className={
+                "w-10 h-10 m-auto p-2 border bg-white rounded-md hover:bg-gray-300 active:bg-gray-400 "
+              }
+            />
+          </button>
+          <button title="Redo" onClick={redoHandler} type="button" className="">
             <LuRedo2
               className={
                 "w-10 h-10 p-2 m-auto border bg-white rounded-md hover:bg-gray-300 active:bg-gray-400 "
