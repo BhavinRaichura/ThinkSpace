@@ -1,4 +1,4 @@
-# Whiteboard Web Application
+# ThinkSpace: A Whiteboard Web Application
 
 This repository contains the frontend code for a Whiteboard Web Application built using ReactJS. It enables users to collaborate in real-time, drawing shapes and lines, using various tools like pencil, eraser, and predefined shapes (line, circle, rectangle).
 
