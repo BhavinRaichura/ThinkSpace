@@ -10,7 +10,7 @@ const Cursor = () => {
 
     function mouseMove (e){
       const {clientX, clientY} = e
-      console.log(clientX, " ", clientY)
+      // console.log(clientX, " ", clientY)
       if(pointerRef && pointerRef.current){
       
         pointerRef.current.style.transform = `translate(${clientX}px, ${clientY}px)`;

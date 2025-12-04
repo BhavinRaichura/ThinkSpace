@@ -1,41 +1,58 @@
 import React, { useEffect, useState } from "react";
-import settingActions from '../../../utils/settings/actions'
-
+import settingActions from "../../../utils/settings/actions";
 import tools from "../../../utils/settings/all/tools";
 
+const Toolbar = ({ settings, settingsDispatcher, deleteSelected }) => {
+  const [activeToolId, setActiveToolId] = useState(0);
 
-const Toolbar = ({ settings, settingsDispatcher}) => {
-  const [activeToolId, setActiveToolId] = useState(1);
+  useEffect(() => {
+    const keyPressHandler = (e) => {
+      let idx = e.keyCode - 49;
 
-  useEffect(()=>{
-    // Set the active tool by keypress
-    const keyPressHandler =(e)=>{
-      let keyCode = e.keyCode-49
-      if(keyCode>=0 && keyCode<5) {
-        setActiveToolId(keyCode+1)
-        settingsDispatcher({type:settingActions.CHANGE_TOOL, payload:tools[keyCode].name})
+      if (idx >= 0 && idx < tools.length) {
+        const tool = tools[idx];
+        
+        if (tool.name === "Delete") {
+          deleteSelected();
+          return;
+        }
+
+        setActiveToolId(tool.id);
+        settingsDispatcher({
+          type: settingActions.CHANGE_TOOL,
+          payload: tool.name,
+        });
       }
-    }
-    document.addEventListener("keypress", keyPressHandler )
-    return (()=>document.removeEventListener('keypress', keyPressHandler))
-  },[settingsDispatcher])
+    };
+
+    document.addEventListener("keypress", keyPressHandler);
+    return () => document.removeEventListener("keypress", keyPressHandler);
+  }, [settingsDispatcher, deleteSelected]);
 
   return (
-    <div className=" z-50  w-max bg-white shadow-lg m-auto rounded-lg h-14 p-2 box-border">
+    <div className="z-50 w-max shadow-lg m-auto rounded-lg h-14 p-2">
       <div className="flex gap-2 h-full items-center">
-        {tools.map((tool, key) => (
-            <button key={key} 
-                className={`w-10 h-10 border bg-slate-800 rounded-lg hover:bg-gray-100 ${activeToolId===tool.id ? " border-indigo-900" : ""} `}
-                type="button" 
-                title={tool.name}
-                onClick={()=>{
-                  setActiveToolId(tool.id)
-                  settingsDispatcher({type:settingActions.CHANGE_TOOL, payload:tool.name})
-                }}
-            >
-              {activeToolId===tool.id ? tool.iconFill : tool.icon}
-            </button>
-          
+        {tools.map((tool) => (
+          <button
+            key={tool.id}
+            className={`w-10 h-10 border bg-white rounded-lg ${
+              activeToolId === tool.id ? "border-indigo-900" : ""
+            }`}
+            title={tool.name}
+            onClick={() => {
+              if (tool.name === "Delete") {
+                deleteSelected();
+              } else {
+                setActiveToolId(tool.id);
+                settingsDispatcher({
+                  type: settingActions.CHANGE_TOOL,
+                  payload: tool.name,
+                });
+              }
+            }}
+          >
+            {activeToolId === tool.id ? tool.iconFill : tool.icon}
+          </button>
         ))}
       </div>
     </div>
