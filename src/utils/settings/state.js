@@ -6,6 +6,7 @@ const initialSettings = {
     strokeFill: "",
     strokeStyle: "",
     roughness: 0.7,
+    toolId: 0,
 };
 
 export default initialSettings;

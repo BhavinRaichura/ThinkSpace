@@ -20,7 +20,7 @@ import { AiOutlineClear } from "react-icons/ai";
 const reducer = (state, action) => {
   switch (action.type) {
     case settingActions.CHANGE_TOOL:
-      return { ...state, tool: action.payload };
+      return { ...state, tool: action.payload.name, toolId: action.payload._id || "" };
     case settingActions.CHANGE_COLOR:
       return { ...state, color: action.payload };
     case settingActions.CHANGE_BACKGROUND:
@@ -50,35 +50,44 @@ const Whiteboard = () => {
   const ctxRef = useRef(null);
 
   // Load existing room data
- // Whiteboard.jsx (or wherever you load from localStorage)
-useEffect(() => {
-  const raw = localStorage.getItem(`room-${roomId}`);
-  if (!raw) {
-    operationsRef.current = [];
-    return;
-  }
+  // Whiteboard.jsx (or wherever you load from localStorage)
+  useEffect(() => {
+    const rooms = localStorage.getItem(`rooms`);
+    if (!rooms?.includes(roomId)) {
+      localStorage.setItem(`rooms`, JSON.stringify({
+        ...JSON.parse(rooms || '{}'),
+        [roomId]: { createdAt: Date.now() }
+      }));
+    }
+    
+    const raw = localStorage.getItem(`room-${roomId}`);
+    if (!raw) {
+      operationsRef.current = [];
+      return;
+    }
+    
 
-  try {
-    const parsed = JSON.parse(raw);
+    try {
+      const parsed = JSON.parse(raw);
 
-    // If you used { updatedAt, data } format
-    if (parsed && Array.isArray(parsed.data)) {
-      operationsRef.current = parsed.data;
-    } else if (Array.isArray(parsed)) {
-      // old format: stored array directly
-      operationsRef.current = parsed;
-    } else {
-      // corrupted / unexpected format: reset to empty array
-      console.warn("Unexpected room data format — resetting operations for", roomId, parsed);
+      // If you used { updatedAt, data } format
+      if (parsed && Array.isArray(parsed.data)) {
+        operationsRef.current = parsed.data;
+      } else if (Array.isArray(parsed)) {
+        // old format: stored array directly
+        operationsRef.current = parsed;
+      } else {
+        // corrupted / unexpected format: reset to empty array
+        console.warn("Unexpected room data format — resetting operations for", roomId, parsed);
+        operationsRef.current = [];
+        localStorage.removeItem(`room-${roomId}`);
+      }
+    } catch (err) {
+      console.error("Failed parsing localStorage for room:", roomId, err);
       operationsRef.current = [];
       localStorage.removeItem(`room-${roomId}`);
     }
-  } catch (err) {
-    console.error("Failed parsing localStorage for room:", roomId, err);
-    operationsRef.current = [];
-    localStorage.removeItem(`room-${roomId}`);
-  }
-}, [roomId]);
+  }, [roomId]);
 
 
   const deleteSelected = useCallback(() => {
@@ -89,7 +98,7 @@ useEffect(() => {
 
   // Save changes (only when operations change)
   const saveState = useCallback(() => {
-    if(operationsRef.current === null || !Array.isArray(operationsRef.current)) return;
+    if (operationsRef.current === null || !Array.isArray(operationsRef.current)) return;
     localStorage.setItem(
       `room-${roomId}`,
       JSON.stringify({
@@ -160,7 +169,7 @@ useEffect(() => {
       />
 
       {/* TOOLBAR */}
-      <div className="fixed top-5 items-center w-full">
+      <div className="fixed top-2 items-center w-full">
         <Toolbar
           settings={settings}
           settingsDispatcher={settingsDispatcher}
@@ -170,27 +179,29 @@ useEffect(() => {
       </div>
 
       {/* STYLEBAR + UNDO/REDO */}
-      <div className="fixed grid grid-flow-row max-md:grid-flow-col grid-cols-3 
-          max-md:w-full md:top-20 max-md:bottom-5 p-2">
+      {
+        settings.tool !== "Select" &&
+        <div className="fixed left-5 md:top-20 max-md:bottom-3">
 
-        <div className="col-span-3 max-md:col-span-1">
-          <Stylebar settings={settings} settingsDispatcher={settingsDispatcher} />
+          <div>
+            <Stylebar settings={settings} settingsDispatcher={settingsDispatcher} />
+          </div>
+
+          {/* <div className="col-span-3 max-md:col-span-1 flex items-end justify-end z-0">
+            <button onClick={undoHandler}>
+              <LuUndo2 className="w-10 h-10 p-2 bg-white border rounded-md" />
+            </button>
+
+            <button onClick={clearHandler} >
+              <AiOutlineClear className="w-10 h-10 p-2 bg-white border rounded-md " />
+            </button>
+
+            <button onClick={redoHandler}>
+              <LuRedo2 className="w-10 h-10 p-2 bg-white border rounded-md" />
+            </button>
+          </div> */}
         </div>
-
-        <div className="col-span-3 max-md:col-span-2 flex justify-around z-0">
-          <button onClick={undoHandler}>
-            <LuUndo2 className="w-10 h-10 p-2 bg-white border rounded-md" />
-          </button>
-
-          <button onClick={clearHandler}>
-            <AiOutlineClear className="w-10 h-10 p-2 bg-white border rounded-md" />
-          </button>
-
-          <button onClick={redoHandler}>
-            <LuRedo2 className="w-10 h-10 p-2 bg-white border rounded-md" />
-          </button>
-        </div>
-      </div>
+  }
     </div>
   );
 };

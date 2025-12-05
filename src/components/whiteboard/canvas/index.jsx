@@ -15,7 +15,7 @@ export default function Canvas({
   pushOperation,
 }) {
 
-  // console.log("Canvas render");
+  // // console.log("Canvas render");
   const drawingRef = useRef(false);
   const pathRef = useRef([]);
   const settingsRef = useRef(settings);
@@ -50,7 +50,7 @@ export default function Canvas({
       rc.linearPath(data, {
         stroke: color,
         strokeWidth,
-        roughness: 0.1,
+        roughness: 0.01,
       });
     } else if (tool === "Rectangle") {
       const [x1, y1, x2, y2] = data;
@@ -62,7 +62,7 @@ export default function Canvas({
           strokeWidth,
           fill: background,
           fillStyle: strokeFill,
-          roughness: 0.1,
+          roughness: 0.01,
         })
       );
     } else if (tool === "Circle") {
@@ -78,7 +78,7 @@ export default function Canvas({
           strokeWidth,
           fill: background,
           fillStyle: strokeFill,
-          roughness: 0.1,
+          roughness: 0.01,
         })
       );
     } else if (tool === "Line") {
@@ -86,14 +86,14 @@ export default function Canvas({
         generator.line(...data, {
           stroke: color,
           strokeWidth,
-          roughness: 0.1,
+          roughness: 0.01,
         })
       );
     } else if (tool === "Eraser") {
       rc.linearPath(data, {
         stroke: "#ffffff",
         strokeWidth: 50,
-        roughness: 0.5,
+        roughness: 0.01,
       });
     }
   }
@@ -187,7 +187,7 @@ export default function Canvas({
       // Rectangle
       if (el.tool === "Rectangle") {
         const [x1, y1, w, h] = el.data;
-        // console.log("rect", el);
+        // // console.log("rect", el);
         if (x >= x1 && x <= x1 + w && y >= y1 && y <= y1 + h) {
           return el;
         }
@@ -259,64 +259,64 @@ export default function Canvas({
   // -----------------------------------------------------
   // MOUSE EVENTS
   // -----------------------------------------------------
-  const handleMouseDown = (e) => {
-    const { layerX, layerY } = e.nativeEvent;
+  // const handleMouseDown = (e) => {
+  //   const { layerX, layerY } = e.nativeEvent;
 
-    // SELECT tool
-    if (settingsRef.current.tool === "Select") {
-      selectedRef.current = hitTest(layerX, layerY);
-      redrawCanvas();
-      return;
-    }
+  //   // SELECT tool
+  //   if (settingsRef.current.tool === "Select") {
+  //     selectedRef.current = hitTest(layerX, layerY);
+  //     redrawCanvas();
+  //     return;
+  //   }
 
-    drawingRef.current = true;
-    selectedRef.current = null;
+  //   drawingRef.current = true;
+  //   selectedRef.current = null;
 
-    if (
-      settingsRef.current.tool === "Pen" ||
-      settingsRef.current.tool === "Eraser"
-    ) {
-      pathRef.current = [[layerX, layerY]];
-    } else {
-      pathRef.current = [layerX, layerY, layerX, layerY];
-    }
+  //   if (
+  //     settingsRef.current.tool === "Pen" ||
+  //     settingsRef.current.tool === "Eraser"
+  //   ) {
+  //     pathRef.current = [[layerX, layerY]];
+  //   } else {
+  //     pathRef.current = [layerX, layerY, layerX, layerY];
+  //   }
 
-    redrawCanvas();
-  };
+  //   redrawCanvas();
+  // };
 
-  const handleMouseMove = (e) => {
-    if (!drawingRef.current) return;
+  // const handleMouseMove = (e) => {
+  //   if (!drawingRef.current) return;
 
-    const { layerX, layerY } = e.nativeEvent;
-    const tool = settingsRef.current.tool;
+  //   const { layerX, layerY } = e.nativeEvent;
+  //   const tool = settingsRef.current.tool;
 
-    if (tool === "Pen" || tool === "Eraser") {
-      pathRef.current.push([layerX, layerY]);
-    } else {
-      pathRef.current[2] = layerX;
-      pathRef.current[3] = layerY;
-    }
+  //   if (tool === "Pen" || tool === "Eraser") {
+  //     pathRef.current.push([layerX, layerY]);
+  //   } else {
+  //     pathRef.current[2] = layerX;
+  //     pathRef.current[3] = layerY;
+  //   }
 
-    redrawCanvas();
-  };
+  //   redrawCanvas();
+  // };
 
-  const handleMouseUp = () => {
-    if (!drawingRef.current) return;
-    drawingRef.current = false;
+  // const handleMouseUp = () => {
+  //   if (!drawingRef.current) return;
+  //   drawingRef.current = false;
 
-    pushOperation({
-      id: uuidv4(),
-      tool: settingsRef.current.tool,
-      data: [...pathRef.current],
-      color: settingsRef.current.color,
-      strokeWidth: settingsRef.current.strokeWidth,
-      strokeFill: settingsRef.current.strokeFill,
-      background: settingsRef.current.background,
-    });
+  //   pushOperation({
+  //     id: uuidv4(),
+  //     tool: settingsRef.current.tool,
+  //     data: [...pathRef.current],
+  //     color: settingsRef.current.color,
+  //     strokeWidth: settingsRef.current.strokeWidth,
+  //     strokeFill: settingsRef.current.strokeFill,
+  //     background: settingsRef.current.background,
+  //   });
 
-    pathRef.current = [];
-    redrawCanvas();
-  };
+  //   pathRef.current = [];
+  //   redrawCanvas();
+  // };
 
   // -----------------------------------------------------
   // TOUCH EVENTS

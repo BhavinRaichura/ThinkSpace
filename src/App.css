@@ -5,3 +5,10 @@
 #myCanvas::-webkit-scrollbar {
     display: hidden;
 }
+
+.indie-flower-regular {
+  font-family: "Indie Flower", cursive;
+}
+.selectField {
+    @apply h-full w-full bg-gray-100 px-4 py-2  disabled:bg-gray-200 font-sans text-xs font-bold uppercase border border-gray-300
+}
