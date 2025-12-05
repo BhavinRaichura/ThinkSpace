@@ -4,6 +4,7 @@ import {useNavigate} from 'react-router-dom'
 import { FaUserAlt } from "react-icons/fa";
 import { FaKey } from "react-icons/fa6";
 import { FaCopy } from "react-icons/fa";
+import JoinRoomForm from '../JoinRoomForm';
 
 
 
@@ -23,7 +24,7 @@ const CreateRoomForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!username || !newRoomId) return;
-    navigate('/room/'+newRoomId)
+    navigate(`/room/${username}-R${newRoomId}-D${new Date().toLocaleDateString().replaceAll("/", ".")}`)
   }
   return (
     <form className={styles.formBody} onSubmit={handleSubmit}>
@@ -44,6 +45,8 @@ const CreateRoomForm = () => {
           Create Room
         </button>
       </div>
+      <p className=' text-center p-6'>Or</p>
+      <JoinRoomForm />
     </form>
   )
 }

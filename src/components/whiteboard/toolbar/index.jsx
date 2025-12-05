@@ -4,6 +4,7 @@ import tools from "../../../utils/settings/all/tools";
 
 const Toolbar = ({ settings, settingsDispatcher, deleteSelected }) => {
   const [activeToolId, setActiveToolId] = useState(0);
+  // console.log("settings in toolbar", settings);
 
   useEffect(() => {
     const keyPressHandler = (e) => {
@@ -11,7 +12,7 @@ const Toolbar = ({ settings, settingsDispatcher, deleteSelected }) => {
 
       if (idx >= 0 && idx < tools.length) {
         const tool = tools[idx];
-        
+
         if (tool.name === "Delete") {
           deleteSelected();
           return;
@@ -20,7 +21,7 @@ const Toolbar = ({ settings, settingsDispatcher, deleteSelected }) => {
         setActiveToolId(tool.id);
         settingsDispatcher({
           type: settingActions.CHANGE_TOOL,
-          payload: tool.name,
+          payload: { name: tool.name, id: tool.id },
         });
       }
     };
@@ -35,9 +36,8 @@ const Toolbar = ({ settings, settingsDispatcher, deleteSelected }) => {
         {tools.map((tool) => (
           <button
             key={tool.id}
-            className={`w-10 h-10 border bg-white rounded-lg ${
-              activeToolId === tool.id ? "border-indigo-900" : ""
-            }`}
+            className={`w-10 h-10 border bg-white rounded-lg ${activeToolId === tool.id ? "border-indigo-900" : ""
+              }`}
             title={tool.name}
             onClick={() => {
               if (tool.name === "Delete") {
@@ -46,7 +46,7 @@ const Toolbar = ({ settings, settingsDispatcher, deleteSelected }) => {
                 setActiveToolId(tool.id);
                 settingsDispatcher({
                   type: settingActions.CHANGE_TOOL,
-                  payload: tool.name,
+                  payload: { name: tool.name, _id: tool.id },
                 });
               }
             }}
@@ -59,4 +59,4 @@ const Toolbar = ({ settings, settingsDispatcher, deleteSelected }) => {
   );
 };
 
-export default Toolbar;
+export default React.memo(Toolbar);
