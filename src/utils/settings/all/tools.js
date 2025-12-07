@@ -11,8 +11,8 @@ import {
   MdRectangle,
   MdOutlineCircle,
   MdCircle,
-  MdDelete,
-  MdDeleteForever,
+  // MdDelete,
+  // MdDeleteForever,
 } from "react-icons/md";
 
 import { HiCursorClick, HiCursorClick as HiCursorClickFill } from "react-icons/hi";
@@ -76,13 +76,13 @@ const tools = [
     iconFill: <BsEraserFill className="m-auto text-indigo-900" />,
     configs: [],
   },
-  {
-    id: 6,
-    name: "Delete",
-    icon: <MdDelete className="m-auto" />,
-    iconFill: <MdDeleteForever className="m-auto text-red-700" />,
-    configs: [],
-  },
+  // {
+  //   id: 6,
+  //   name: "Delete",
+  //   icon: <MdDelete className="m-auto" />,
+  //   iconFill: <MdDeleteForever className="m-auto text-red-700" />,
+  //   configs: [],
+  // },
 ];
 
 export default tools;
