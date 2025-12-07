@@ -13,10 +13,10 @@ const Toolbar = ({ settings, settingsDispatcher, deleteSelected }) => {
       if (idx >= 0 && idx < tools.length) {
         const tool = tools[idx];
 
-        if (tool.name === "Delete") {
-          deleteSelected();
-          return;
-        }
+        // if (tool.name === "Delete") {
+        //   deleteSelected();
+        //   return;
+        // }
 
         setActiveToolId(tool.id);
         settingsDispatcher({
@@ -40,15 +40,15 @@ const Toolbar = ({ settings, settingsDispatcher, deleteSelected }) => {
               }`}
             title={tool.name}
             onClick={() => {
-              if (tool.name === "Delete") {
-                deleteSelected();
-              } else {
+              // if (tool.name === "Delete") {
+              //   deleteSelected();
+              // } else {
                 setActiveToolId(tool.id);
                 settingsDispatcher({
                   type: settingActions.CHANGE_TOOL,
                   payload: { name: tool.name, _id: tool.id },
                 });
-              }
+              // }
             }}
           >
             {activeToolId === tool.id ? tool.iconFill : tool.icon}

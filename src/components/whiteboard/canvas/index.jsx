@@ -89,12 +89,6 @@ export default function Canvas({
           roughness: 0.01,
         })
       );
-    } else if (tool === "Eraser") {
-      rc.linearPath(data, {
-        stroke: "#ffffff",
-        strokeWidth: 50,
-        roughness: 0.01,
-      });
     }
   }
 
@@ -107,8 +101,13 @@ export default function Canvas({
     const rc = rough.canvas(canvas);
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    operationsRef.current && operationsRef.current.forEach((el) => drawElement(rc, el));
+    
+    const availableOperations = operationsRef.current.reduce((acc, op) => {
+      acc[op.id] = op.isDeleted ? null : op;
+      return acc;
+    }, {});
+    
+    availableOperations && Object.values(availableOperations).filter(e => e).forEach((el) => drawElement(rc, el));
 
     // preview
     if (drawingRef.current && pathRef.current.length > 0) {
@@ -172,7 +171,12 @@ export default function Canvas({
   // HIT TEST (detect clicked element)
   // -----------------------------------------------------
   function hitTest(x, y) {
-    const ops = operationsRef.current;
+    const availableOperations = operationsRef.current.reduce((acc, op) => {
+      acc[op.id] = op.isDeleted ? null : op;
+      return acc;
+    }, {});
+
+    const ops = Object.values(availableOperations || {}).filter(e => e);
 
     for (let i = ops.length - 1; i >= 0; i--) {
       const el = ops[i];
@@ -186,43 +190,72 @@ export default function Canvas({
 
       // Rectangle
       if (el.tool === "Rectangle") {
-        const [x1, y1, w, h] = el.data;
-        // // console.log("rect", el);
-        if (x >= x1 && x <= x1 + w && y >= y1 && y <= y1 + h) {
+        const [x1, y1, x2, y2] = el.data;
+        const threshold = 6;
+        if (x >= x1-threshold && x <= x2+threshold && y1+threshold >= y && y1-threshold<=y) {
+          return el;
+        } else if (x >= x1-threshold && x <= x2+threshold && y2+4 >= y && y2-4<=y) {
+          return el;
+        } else if (y >= y1-threshold && y <= y2+threshold && x1+threshold >= x && x1-threshold<=x) {
+          return el;
+        } else if (y >= y1-threshold && y <= y2+threshold && x2+threshold>= x && x2-threshold<=x) {
           return el;
         }
       }
 
       // Circle
       if (el.tool === "Circle") {
+        // check the point p(x,y) is near the ellipse boundary
         const [x1, y1, x2, y2] = el.data;
         const cx = (x1 + x2) / 2;
         const cy = (y1 + y2) / 2;
         const rx = Math.abs((x2 - x1) / 2);
         const ry = Math.abs((y2 - y1) / 2);
-
-        const dx = (x - cx) ** 2 / (rx ** 2);
-        const dy = (y - cy) ** 2 / (ry ** 2);
-        if (dx + dy <= 1) return el;
+        const distX = x - cx;
+        const distY = y - cy;
+        const value = ((distX * distX) / (rx * rx)) + ((distY * distY) / (ry * ry));
+        const boundary = 1;
+        const threshold = 0.2; // Adjust this value for sensitivity
+        
+        if (Math.abs(value - boundary) < threshold) {
+          return el;
+        }
       }
 
       // Line
       if (el.tool === "Line") {
         const [x1, y1, x2, y2] = el.data;
-
+        const threshold = 6;
+        
+        // Calculate distance from point to line segment
         const A = x - x1;
         const B = y - y1;
         const C = x2 - x1;
         const D = y2 - y1;
-
         const dot = A * C + B * D;
         const lenSq = C * C + D * D;
-        let param = dot / lenSq;
+        let param = -1;
+        if (lenSq !== 0) param = dot / lenSq;
 
-        if (param >= 0 && param <= 1) {
-          const xx = x1 + param * C;
-          const yy = y1 + param * D;
-          if (Math.hypot(x - xx, y - yy) < 6) return el;
+        let xx, yy;
+
+        if (param < 0) {
+          xx = x1;
+          yy = y1;
+        } else if (param > 1) {
+          xx = x2;
+          yy = y2;
+        } else {
+          xx = x1 + param * C;
+          yy = y1 + param * D;
+        }
+
+        const dx = x - xx;
+        const dy = y - yy;
+        const distance = Math.hypot(dx, dy);
+
+        if (distance < threshold) {
+          return el;
         }
       }
     }
@@ -232,6 +265,18 @@ export default function Canvas({
   // -----------------------------------------------------
   // DELETE SELECTED ELEMENT
   // -----------------------------------------------------
+  function eraserElement(x, y) {
+    // find the topmost element under the (x, y) point
+    const result = hitTest(x, y);
+    // mark it as deleted
+    if (result && settingsRef.current.tool === "Eraser") {
+      const entry = JSON.parse(JSON.stringify(result));
+      entry.isDeleted = true;
+      operationsRef.current.push(entry);
+      redrawCanvas();
+    }
+  }
+
   function deleteSelected() {
     if (!selectedRef.current) return;
 
@@ -256,67 +301,6 @@ export default function Canvas({
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
-  // -----------------------------------------------------
-  // MOUSE EVENTS
-  // -----------------------------------------------------
-  // const handleMouseDown = (e) => {
-  //   const { layerX, layerY } = e.nativeEvent;
-
-  //   // SELECT tool
-  //   if (settingsRef.current.tool === "Select") {
-  //     selectedRef.current = hitTest(layerX, layerY);
-  //     redrawCanvas();
-  //     return;
-  //   }
-
-  //   drawingRef.current = true;
-  //   selectedRef.current = null;
-
-  //   if (
-  //     settingsRef.current.tool === "Pen" ||
-  //     settingsRef.current.tool === "Eraser"
-  //   ) {
-  //     pathRef.current = [[layerX, layerY]];
-  //   } else {
-  //     pathRef.current = [layerX, layerY, layerX, layerY];
-  //   }
-
-  //   redrawCanvas();
-  // };
-
-  // const handleMouseMove = (e) => {
-  //   if (!drawingRef.current) return;
-
-  //   const { layerX, layerY } = e.nativeEvent;
-  //   const tool = settingsRef.current.tool;
-
-  //   if (tool === "Pen" || tool === "Eraser") {
-  //     pathRef.current.push([layerX, layerY]);
-  //   } else {
-  //     pathRef.current[2] = layerX;
-  //     pathRef.current[3] = layerY;
-  //   }
-
-  //   redrawCanvas();
-  // };
-
-  // const handleMouseUp = () => {
-  //   if (!drawingRef.current) return;
-  //   drawingRef.current = false;
-
-  //   pushOperation({
-  //     id: uuidv4(),
-  //     tool: settingsRef.current.tool,
-  //     data: [...pathRef.current],
-  //     color: settingsRef.current.color,
-  //     strokeWidth: settingsRef.current.strokeWidth,
-  //     strokeFill: settingsRef.current.strokeFill,
-  //     background: settingsRef.current.background,
-  //   });
-
-  //   pathRef.current = [];
-  //   redrawCanvas();
-  // };
 
   // -----------------------------------------------------
   // TOUCH EVENTS
@@ -363,8 +347,10 @@ export default function Canvas({
     selectedRef.current = null;
     drawingRef.current = true;
 
-    if (tool === "Pen" || tool === "Eraser") {
+    if (tool === "Pen") {
       pathRef.current = [[x, y]];
+    } else if(tool === "Eraser") {
+      eraserElement(x, y);
     } else {
       pathRef.current = [x, y, x, y];
     }
@@ -376,9 +362,11 @@ export default function Canvas({
     if (!drawingRef.current) return;
     const tool = settingsRef.current.tool;
 
-    if (tool === "Pen" || tool === "Eraser") {
+    if (tool === "Pen") {
       pathRef.current.push([x, y]);
-    } else {
+    } else if(tool === "Eraser") {
+      eraserElement(x, y);
+    }  else {
       pathRef.current[2] = x;
       pathRef.current[3] = y;
     }
@@ -390,6 +378,9 @@ export default function Canvas({
     if (!drawingRef.current) return;
 
     drawingRef.current = false;
+    if(settingsRef.current.tool === "Eraser") {
+      return;
+    }
 
     pushOperation({
       id: uuidv4(),
